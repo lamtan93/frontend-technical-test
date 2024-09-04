@@ -1,3 +1,11 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { MemeEditor } from "../../components/MemeEditor/MemeEditor";
+import { useMemo, useState } from "react";
+import { MemePictureProps } from "../../components/MemePicture/MemePicture";
+import { Plus, Trash } from "@phosphor-icons/react";
+import { createMeme } from "../../api/api";
+import { useAuthToken, useTokenDateExpriration } from "../../contexts/authentication";
+import { useNavigateTo } from "../../hooks/useNavigateTo";
 import {
   Box,
   Button,
@@ -10,11 +18,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { MemeEditor } from "../../components/meme-editor";
-import { useMemo, useState } from "react";
-import { MemePictureProps } from "../../components/meme-picture";
-import { Plus, Trash } from "@phosphor-icons/react";
+
 
 export const Route = createFileRoute("/_authentication/create")({
   component: CreateMemePage,
@@ -22,13 +26,19 @@ export const Route = createFileRoute("/_authentication/create")({
 
 type Picture = {
   url: string;
-  file: File;
+  file: File
 };
 
 function CreateMemePage() {
+  const token = useAuthToken();
+  // const tokenExp = useTokenDateExpriration();
+
   const [picture, setPicture] = useState<Picture | null>(null);
   const [texts, setTexts] = useState<MemePictureProps["texts"]>([]);
+  const [description, setDescription] = useState('');
 
+  const { navigateTo } = useNavigateTo()
+  
   const handleDrop = (file: File) => {
     setPicture({
       url: URL.createObjectURL(file),
@@ -41,8 +51,8 @@ function CreateMemePage() {
       ...texts,
       {
         content: `New caption ${texts.length + 1}`,
-        x: Math.random() * 400,
-        y: Math.random() * 225,
+        x: Math.round(Math.random() * 400),
+        y: Math.round(Math.random() * 225),
       },
     ]);
   };
@@ -62,6 +72,28 @@ function CreateMemePage() {
     };
   }, [picture, texts]);
 
+  const handleSubmit = async () => {
+    if(!picture) {
+      alert('please add a picture!')
+      return
+    } 
+    await createMeme(token, picture.file, description, texts)
+    navigateTo('/')
+  }
+
+  const handleOnChangeCaption = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const currentContent = e.currentTarget.value;
+    if(currentContent.trim().length > 0){
+      setTexts(prevTexts => 
+        prevTexts.map((text, i) => i === index ? {...text, content: currentContent} : text)
+      )
+    }
+  }
+  const handleOnChangeDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const currentDescription = e.currentTarget.value;
+    setDescription(currentDescription);
+  }
+
   return (
     <Flex width="full" height="full">
       <Box flexGrow={1} height="full" p={4} overflowY="auto">
@@ -76,7 +108,7 @@ function CreateMemePage() {
             <Heading as="h2" size="md" mb={2}>
               Describe your meme
             </Heading>
-            <Textarea placeholder="Type your description here..." />
+            <Textarea placeholder="Type your description here..." onChange={handleOnChangeDescription}/>
           </Box>
         </VStack>
       </Box>
@@ -93,8 +125,8 @@ function CreateMemePage() {
         <Box p={4} flexGrow={1} height={0} overflowY="auto">
           <VStack>
             {texts.map((text, index) => (
-              <Flex width="full">
-                <Input key={index} value={text.content} mr={1} />
+              <Flex width="full" key={`${text}-${index}`}>
+                <Input key={index} defaultValue={text.content} mr={1} onChange={(e) => handleOnChangeCaption(e,index)}/>
                 <IconButton
                   onClick={() => handleDeleteCaptionButtonClick(index)}
                   aria-label="Delete caption"
@@ -132,6 +164,7 @@ function CreateMemePage() {
             width="full"
             color="white"
             isDisabled={memePicture === undefined}
+            onClick={handleSubmit}
           >
             Submit
           </Button>

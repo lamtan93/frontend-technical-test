@@ -1,3 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import { getUserById } from "../../api/api";
+import { useAuthentication } from "../../contexts/authentication";
+import { CaretDown, CaretUp, SignOut } from "@phosphor-icons/react";
 import {
   Menu,
   MenuButton,
@@ -8,10 +12,6 @@ import {
   Icon,
   Flex,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
-import { CaretDown, CaretUp, SignOut } from "@phosphor-icons/react";
-import { useAuthentication } from "../contexts/authentication";
-import { getUserById } from "../api";
 
 export const UserDropdown: React.FC = () => {
   const { state, signout } = useAuthentication();

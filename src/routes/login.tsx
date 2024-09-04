@@ -11,7 +11,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { login, UnauthorizedError } from "../api";
+import { login, UnauthorizedError } from "../api/api";
 import { useAuthentication } from "../contexts/authentication";
 
 type SearchParams = {

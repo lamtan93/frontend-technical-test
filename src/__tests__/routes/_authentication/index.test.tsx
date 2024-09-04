@@ -1,7 +1,7 @@
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor  } from "@testing-library/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { AuthenticationContext } from "../../../contexts/authentication";
+import { AuthenticationContext, } from "../../../contexts/authentication";
 import { MemeFeedPage } from "../../../routes/_authentication/index";
 import { renderWithRouter } from "../../utils";
 
@@ -34,7 +34,7 @@ describe("routes/_authentication/index", () => {
 
     it("should fetch the memes and display them with their comments", async () => {
       renderMemeFeedPage();
-
+      
       await waitFor(() => {
         // We check that the right author's username is displayed
         expect(screen.getByTestId("meme-author-dummy_meme_id_1")).toHaveTextContent('dummy_user_1');
@@ -63,7 +63,13 @@ describe("routes/_authentication/index", () => {
         
         // We check that the right number of comments is displayed
         expect(screen.getByTestId("meme-comments-count-dummy_meme_id_1")).toHaveTextContent('3 comments');
-        
+      });
+
+      //Click on comment section to fetch comments data from API
+      const memeContent = await screen.findByTestId('meme-comments-section-dummy_meme_id_1');
+      fireEvent.click(memeContent);
+
+      await waitFor(() => {
         // We check that the right comments with the right authors are displayed
         expect(screen.getByTestId("meme-comment-content-dummy_meme_id_1-dummy_comment_id_1")).toHaveTextContent('dummy comment 1');
         expect(screen.getByTestId("meme-comment-author-dummy_meme_id_1-dummy_comment_id_1")).toHaveTextContent('dummy_user_1');
@@ -73,7 +79,9 @@ describe("routes/_authentication/index", () => {
         
         expect(screen.getByTestId("meme-comment-content-dummy_meme_id_1-dummy_comment_id_3")).toHaveTextContent('dummy comment 3');
         expect(screen.getByTestId("meme-comment-author-dummy_meme_id_1-dummy_comment_id_3")).toHaveTextContent('dummy_user_3');
-      });
+
+      })
+
     });
   });
 });

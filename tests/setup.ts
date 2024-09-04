@@ -12,3 +12,27 @@ afterEach(() => {
   cleanup();
 });
 afterAll(() => server.close());
+
+
+//Mock IntersectionOserver for the test
+class IntersectionObserverMock {
+  private callback: IntersectionObserverCallback;
+
+  constructor(callback: IntersectionObserverCallback) {
+    this.callback = callback;
+  }
+
+  observe() {
+    // No-op
+  }
+
+  unobserve() {
+    // No-op
+  }
+
+  disconnect() {
+    // No-op
+  }
+}
+
+global.IntersectionObserver = IntersectionObserverMock as unknown as typeof IntersectionObserver;

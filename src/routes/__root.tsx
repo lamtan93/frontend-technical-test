@@ -15,7 +15,7 @@ import {
   AuthenticationState,
   useAuthentication,
 } from "../contexts/authentication";
-import { UserDropdown } from "../components/user-dropdown";
+import { UserDropdown } from "../components/UserDropdown/UserDropdown";
 import { Plus } from "@phosphor-icons/react";
 
 type RouterContext = {

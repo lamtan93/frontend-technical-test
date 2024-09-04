@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -36,7 +36,7 @@ const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <StrictMode>
+    // <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider theme={theme}>
           <AuthenticationProvider>
@@ -44,6 +44,6 @@ if (!rootElement.innerHTML) {
           </AuthenticationProvider>
         </ChakraProvider>
       </QueryClientProvider>
-    </StrictMode>,
+    // </StrictMode>,
   );
 }

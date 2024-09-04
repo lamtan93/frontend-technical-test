@@ -79,3 +79,15 @@ export function useAuthToken() {
   }
   return state.token;
 }
+type JwtPayload = {
+  id: string;
+  exp: number; // L'expiration est en nombre de secondes depuis l'époque Unix
+};
+export function useTokenDateExpriration() {
+  const token = useAuthToken()
+  const decoded = jwtDecode<JwtPayload>(token);
+  if (decoded.exp) {
+    return new Date(decoded.exp * 1000); // Convertir en millisecondes pour obtenir une date JavaScript
+  }
+  throw new Error("Le jeton ne contient pas d'information d'expiration.");
+}
